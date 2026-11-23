@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ماجراجویی جدول تناوبی</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1020">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;color-scheme:dark;--bg:#0b1020;--card:#151c36;--line:#2a3560;--tx:#eef2ff;--mut:#9aa6d4;--acc:#6ee7ff;--ok:#34d399;--bad:#fb7185;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(900px 500px at 80% -10%,#25307a55,transparent),radial-gradient(700px 500px at 0% 100%,#0e7c8a44,transparent),var(--bg);color:var(--tx);font-family:Vazirmatn,Tahoma,sans-serif;line-height:1.7}
+#app{max-width:520px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:4px 0;font-weight:900;background:linear-gradient(90deg,#6ee7ff,#a78bfa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:14px;margin:0 0 14px}
+.atom{width:96px;height:96px;margin:0 auto;display:block}
+.orb{transform-origin:50px 50px;animation:sp 6s linear infinite}.o2{animation-duration:9s;animation-direction:reverse}.o3{animation-duration:12s}
+@keyframes sp{to{transform:rotate(360deg)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0}
+.lv{display:flex;align-items:center;gap:12px;width:100%;text-align:right;color:var(--tx);font:inherit;cursor:pointer;transition:.15s}
+.lv:active{transform:scale(.98)}.lv[disabled]{opacity:.4;cursor:not-allowed}
+.lv .ic{font-size:28px;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#222c55;flex:none}
+.lv b{display:block}.lv small{color:var(--mut)}.st{margin-inline-start:auto;font-size:18px;letter-spacing:2px;white-space:nowrap}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar{flex:1;height:10px;background:#222c55;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#6ee7ff,#a78bfa);transition:.3s}
+.btn{border:0;border-radius:14px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer;color:#06101f;background:var(--acc)}
+.btn.g{background:#222c55;color:var(--tx)}.btn.w{width:100%}
+.q{text-align:center}
+.big{font-size:64px;font-weight:900;line-height:1.1;margin:6px 0;direction:ltr}
+.tile{width:130px;height:130px;margin:6px auto;border-radius:20px;display:grid;place-items:center;border:2px solid var(--c,#6ee7ff);background:color-mix(in srgb,var(--c,#6ee7ff) 14%,transparent);box-shadow:0 0 30px color-mix(in srgb,var(--c,#6ee7ff) 40%,transparent);font-size:50px;font-weight:900;direction:ltr}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.opt{padding:14px 6px;border-radius:14px;border:1px solid var(--line);background:#1c2447;color:var(--tx);font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.opt.ok{background:var(--ok);color:#052e1f;border-color:var(--ok)}.opt.bad{background:var(--bad);color:#3b0a14;border-color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;direction:ltr;margin-top:12px}
+.cell{aspect-ratio:1;border-radius:3px;border:0;padding:0;background:color-mix(in srgb,var(--c) 30%,#1c2447);cursor:pointer;font:700 8px Vazirmatn;color:#06101f}
+.cell.ok{background:var(--ok);outline:2px solid #fff}.cell.bad{background:var(--bad)}
+.hid{visibility:hidden;height:0}
+.fb{margin-top:12px;min-height:24px;font-weight:700}
+.ai{margin-top:10px;background:#101734;border:1px dashed #6d7be0;border-radius:14px;padding:10px 12px;font-size:14px;text-align:right;white-space:pre-wrap}
+.lives{font-size:18px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;font-size:11px}.legend span{display:flex;align-items:center;gap:4px}.legend i{width:10px;height:10px;border-radius:3px}
+.res{text-align:center}.res .big{font-size:56px;direction:rtl}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const E=[[1,'H','هیدروژن','nm'],[2,'He','هلیوم','ng'],[3,'Li','لیتیم','ak'],[4,'Be','بریلیم','ae'],[5,'B','بور','md'],[6,'C','کربن','nm'],[7,'N','نیتروژن','nm'],[8,'O','اکسیژن','nm'],[9,'F','فلوئور','hal'],[10,'Ne','نئون','ng'],[11,'Na','سدیم','ak'],[12,'Mg','منیزیم','ae'],[13,'Al','آلومینیم','pt'],[14,'Si','سیلیسیم','md'],[15,'P','فسفر','nm'],[16,'S','گوگرد','nm'],[17,'Cl','کلر','hal'],[18,'Ar','آرگون','ng'],[19,'K','پتاسیم','ak'],[20,'Ca','کلسیم','ae'],[21,'Sc','اسکاندیم','tm'],[22,'Ti','تیتانیم','tm'],[23,'V','وانادیم','tm'],[24,'Cr','کروم','tm'],[25,'Mn','منگنز','tm'],[26,'Fe','آهن','tm'],[27,'Co','کبالت','tm'],[28,'Ni','نیکل','tm'],[29,'Cu','مس','tm'],[30,'Zn','روی','tm'],[31,'Ga','گالیم','pt'],[32,'Ge','ژرمانیم','md'],[33,'As','آرسنیک','md'],[34,'Se','سلنیم','nm'],[35,'Br','برم','hal'],[36,'Kr','کریپتون','ng']].map(([z,s,n,c])=>({z,s,n,c,row:z<=2?1:z<=10?2:z<=18?3:4,col:z<=2?(z==1?1:18):z<=18?((z-3)%8<2?(z-3)%8+1:(z-3)%8+11):z-18}));
+const CAT={ak:['فلز قلیایی','#ff6b6b'],ae:['قلیایی خاکی','#ffa94d'],tm:['فلز واسطه','#ffd43b'],pt:['فلز پس‌واسطه','#8ce99a'],md:['شبه‌فلز','#38d9a9'],nm:['نافلز','#4dabf7'],hal:['هالوژن','#9775fa'],ng:['گاز نجیب','#f783ac']};
+const LV=[{t:'سلام اتم‌ها',i:'⚛️',d:'نماد را ببین، نام را پیدا کن',p:10,m:'s2n'},{t:'نام تا نماد',i:'🧪',d:'نام را ببین، نماد را بزن',p:20,m:'n2s'},{t:'نقشهٔ گنج',i:'🗺️',d:'خانهٔ عنصر را در جدول پیدا کن',p:20,m:'grid'},{t:'قبیله‌ها',i:'🧬',d:'هر عنصر از کدام خانواده است؟',p:36,m:'cat'},{t:'نبرد نهایی',i:'👑',d:'ترکیبی از همه، با ۳ جان',p:36,m:'mix'}];
+const fa=n=>Number(n).toLocaleString('fa-IR',{useGrouping:false});
+const $=s=>document.querySelector(s),app=$('#app');
+let prog={stars:[0,0,0,0,0]};try{prog=JSON.parse(localStorage.getItem('pq')||'')||prog}catch(e){}
+const save=()=>{try{localStorage.setItem('pq',JSON.stringify(prog))}catch(e){}};
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+let sample=true;
+
+function home(){
+const total=prog.stars.reduce((a,b)=>a+b,0);
+app.innerHTML=`<svg class="atom" viewBox="0 0 100 100"><circle cx="50" cy="50" r="9" fill="#6ee7ff"/><g class="orb"><ellipse cx="50" cy="50" rx="42" ry="15" fill="none" stroke="#a78bfa" stroke-width="1.5"/><circle cx="92" cy="50" r="4" fill="#f472b6"/></g><g class="orb o2" style="transform:rotate(60deg)"><ellipse cx="50" cy="50" rx="42" ry="15" fill="none" stroke="#6ee7ff" stroke-width="1.5"/><circle cx="8" cy="50" r="4" fill="#ffd43b"/></g><g class="orb o3" style="transform:rotate(120deg)"><ellipse cx="50" cy="50" rx="42" ry="15" fill="none" stroke="#f472b6" stroke-width="1.5"/><circle cx="92" cy="50" r="4" fill="#34d399"/></g></svg>
+<h1 style="text-align:center">ماجراجویی جدول تناوبی</h1><p class="sub" style="text-align:center">با پروفسور اتم، ۳۶ عنصر اول را مرحله‌به‌مرحله فتح کن! ⭐ ${fa(total)} از ${fa(15)}</p>`+
+LV.map((l,i)=>{const open=i==0||prog.stars[i-1]>0,s=prog.stars[i];return `<button class="card lv" ${open?'':'disabled'} onclick="start(${i})"><span class="ic">${open?l.i:'🔒'}</span><span><b>مرحلهٔ ${fa(i+1)}: ${l.t}</b><small>${l.d}</small></span><span class="st">${'⭐'.repeat(s)}${'☆'.repeat(3-s)}</span></button>`}).join('')+
+`<div class="legend">${Object.values(CAT).map(c=>`<span><i style="background:${c[1]}"></i>${c[0]}</span>`).join('')}</div>`;
+}
+
+let L,pool,Q,qi,lives,wrong;
+function start(i){
+L=i;const c=LV[i];pool=E.filter(e=>e.z<=c.p);
+const modes=c.m=='mix'?['s2n','n2s','grid','cat']:[c.m];
+Q=shuf(pool).slice(0,8).map((e,k)=>({e,m:modes[k%modes.length]}));
+qi=0;lives=c.m=='mix'?3:99;wrong=0;ask();
+}
+function ask(){
+const {e,m}=Q[qi],c=LV[L];
+let body='';
+const choices=(txt,corr)=>{const o=shuf([corr,...shuf(pool.filter(x=>x!==e)).slice(0,3).map(txt)]);return `<div class="opts">${o.map(v=>`<button class="opt" data-ok="${v==corr?1:0}" onclick="pick(this)">${v}</button>`).join('')}</div>`};
+if(m=='s2n')body=`<p>این عنصر کدام است؟</p><div class="tile" style="--c:${CAT[e.c][1]}">${e.s}</div>`+choices(x=>x.n,e.n);
+if(m=='n2s')body=`<p>نماد شیمیایی این عنصر چیست؟</p><div class="big" style="direction:rtl;font-size:42px">${e.n}</div>`+choices(x=>x.s,e.s);
+if(m=='cat'){const cs=Object.keys(CAT),ans=CAT[e.c][0];const o=shuf([e.c,...shuf(cs.filter(x=>x!=e.c)).slice(0,3)]);body=`<p>${e.n} در کدام خانواده است؟</p><div class="tile" style="--c:#6ee7ff">${e.s}</div><div class="opts">${o.map(v=>`<button class="opt" data-ok="${v==e.c?1:0}" onclick="pick(this)">${CAT[v][0]}</button>`).join('')}</div>`}
+if(m=='grid'){let g='';for(let r=1;r<=4;r++)for(let k=1;k<=18;k++){const x=E.find(y=>y.row==r&&y.col==k);g+=x?`<button class="cell" style="--c:${CAT[x.c][1]}" data-ok="${x==e?1:0}" onclick="pick(this)"></button>`:`<span></span>`}
+body=`<p>خانهٔ این عنصر را در جدول پیدا کن:</p><div class="big" style="direction:rtl;font-size:40px">${e.n} <small style="font-size:18px;color:var(--mut)">(${fa(e.z)})</small></div><div class="grid">${g}</div><p class="sub" style="margin-top:8px">رنگ هر خانه نشان‌دهندهٔ خانوادهٔ آن است. خانه‌ها به ترتیب عدد اتمی چیده شده‌اند.</p>`}
+app.innerHTML=`<div class="top"><button class="btn g" onclick="home()">✕</button><div class="bar"><i style="width:${qi/8*100}%"></i></div>${c.m=='mix'?`<span class="lives">${'❤️'.repeat(lives)}</span>`:''}</div><div class="card q">${body}<div class="fb" id="fb"></div><div id="ai"></div></div>`;
+}
+function pick(b){
+const {e,m}=Q[qi],ok=b.dataset.ok=='1';
+document.querySelectorAll('.opt,.cell').forEach(x=>{x.onclick=null;if(x.dataset.ok=='1')x.classList.add('ok')});
+if(!ok){b.classList.add('bad');wrong++;if(LV[L].m=='mix')lives--;}
+const msg=ok?'🎉 آفرین! درست بود':`❌ پاسخ درست: ${m=='cat'?CAT[e.c][0]:e.n+' ('+e.s+')'}`;
+$('#fb').innerHTML=`<div style="color:${ok?'var(--ok)':'var(--bad)'}">${msg}</div><div class="sub">${e.n} ${e.s} · عدد اتمی ${fa(e.z)} · ${CAT[e.c][0]}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px">${sample?`<button class="btn g" onclick="prof(${ok?1:0},'${b.textContent.trim()}')">💡 پروفسور اتم</button>`:''}<button class="btn" onclick="next()">بعدی ←</button></div>`;
+}
+function next(){qi++;if(lives<=0||qi>=8)return end();ask()}
+function end(){
+const dead=lives<=0,stars=dead?0:wrong==0?3:wrong<=2?2:1;
+if(stars>prog.stars[L]){prog.stars[L]=stars;save()}
+app.innerHTML=`<div class="card res"><div class="big">${dead?'💥':stars==3?'🏆':'🎊'}</div><h1>${dead?'جان‌هایت تمام شد!':stars>0?'مرحله تمام شد!':''}</h1><div class="big" style="font-size:36px">${'⭐'.repeat(stars)}</div><p class="sub">${fa(8-wrong)} پاسخ درست از ${fa(8)}</p><div style="display:grid;gap:8px"><button class="btn w" onclick="start(${L})">🔁 دوباره</button>${!dead&&L<4?`<button class="btn w" onclick="start(${L+1})">مرحلهٔ بعد ←</button>`:''}<button class="btn g w" onclick="home()">🏠 صفحهٔ اصلی</button></div></div>`;
+}
+const F={1:'فراوان‌ترین عنصر جهان است و سوخت ستاره‌ها.',2:'اول در خورشید کشف شد؛ نامش از «هلیوس» یعنی خورشید است.',3:'سبک‌ترین فلز است و در باتری موبایل‌ها به کار می‌رود.',4:'در سنگ زمرد هست و سمی است.',5:'در بوراکس و شیشهٔ مقاوم به حرارت (پیرکس) استفاده می‌شود.',6:'پایهٔ همهٔ موجودات زنده؛ الماس و گرافیت هر دو کربن‌اند!',7:'حدود ۷۸٪ هوایی که نفس می‌کشی نیتروژن است.',8:'حدود ۲۱٪ هوا را می‌سازد و برای تنفس لازم است.',9:'واکنش‌پذیرترین عنصر است و در خمیردندان، دندان‌ها را محکم می‌کند.',10:'در تابلوهای نئونی نور نارنجی‌قرمز می‌دهد.',11:'در نمک خوراکی است و با آب واکنش شدید دارد.',12:'در کلروفیل گیاهان است و شعله‌اش سفید و خیره‌کننده.',13:'فراوان‌ترین فلز پوستهٔ زمین است و سبک.',14:'ماسه و تراشهٔ کامپیوتر از آن ساخته می‌شود.',15:'در DNA و استخوان‌ها هست و در کبریت.',16:'زردرنگ است و بوی تخم‌مرغ گندیده از ترکیباتش می‌آید.',17:'آب استخر را ضدعفونی می‌کند و در نمک خوراکی هم هست.',18:'گاز بی‌اثری که در لامپ‌ها استفاده می‌شود.',19:'در موز و سیب‌زمینی هست و برای ماهیچه‌ها لازم است.',20:'استخوان‌ها و دندان‌هایت از آن محکم‌اند.',21:'نامش از اسکاندیناوی گرفته شده.',22:'سبک و بسیار مقاوم است؛ برای ایمپلنت و هواپیما.',23:'نامش از «وانادیس»، الههٔ زیبایی اسکاندیناوی است.',24:'نامش یعنی «رنگ» و آب‌کاری براق می‌دهد.',25:'برای ساخت فولاد محکم لازم است.',26:'در هموگلوبین خون است و خونت را قرمز می‌کند.',27:'رنگ آبی کبالتی به شیشه و سفال می‌دهد.',28:'در سکه‌ها و باتری‌ها استفاده می‌شود.',29:'رسانای خوب برق است و زنگارش سبز می‌شود.',30:'برای گالوانیزه کردن آهن و تقویت ایمنی بدن به کار می‌رود.',31:'فلزی که در دست تو آب می‌شود!',32:'نیمه‌رسانا است؛ مندلیف وجودش را پیش‌بینی کرده بود.',33:'یکی از معروف‌ترین سم‌های تاریخ است.',34:'نامش از «سلنه»، ماه است و کمی از آن برای بدن لازم است.',35:'مایعی قرمزقهوه‌ای و بدبو؛ همراه جیوه تنها عناصر مایع در دمای اتاق.',36:'نامش یعنی «پنهان»؛ یک گاز نجیب.'};
+const LAT={11:'natrium',19:'kalium',26:'ferrum',29:'cuprum'};
+async function prof(ok,ans){
+const e=Q[qi].e,box=document.createElement('div');box.className='ai';
+$('#ai').replaceChildren(box);
+const offline=()=>{
+  let t=`💡 ${e.n}: ${F[e.z]}\n📍 عدد اتمی ${fa(e.z)}، دورهٔ ${fa(e.row)}، ${CAT[e.c][0]}`;
+  t+=LAT[e.z]?`\n🧠 ترفند: نماد ${e.s} از نام لاتین «${LAT[e.z]}» می‌آید!`:`\n🧠 ترفند: نماد ${e.s} از نام انگلیسی ${e.n} گرفته شده.`;
+  if(!ok&&ans)t+=`\n🤝 «${ans}» پاسخ درست نبود؛ دوباره مرور کن!`;
+  box.textContent=t;
+};
+// GitHub Pages is static hosting, so this edition uses the built-in offline tutor.
+offline();
+}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+home();
+</script>
+</body>
+</html>
